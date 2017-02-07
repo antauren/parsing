@@ -21,8 +21,8 @@ def parse(html):
 
         jobs.append({'title':cols[0].h2.a.text})
 
-        for job in jobs:
-            print(job)
+    for job in jobs:
+        print(job)
 
 def main():
     parse(get_html('https://www.weblancer.net/jobs/'))
