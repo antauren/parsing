@@ -43,7 +43,7 @@ def main():
 
     jobs = []
 
-    page_count = 9 #если задать количество страниц вручную до 8 то ошибок нет
+    #page_count = 8 #если задать количество страниц вручную до 8 то ошибок нет
 
     for page in range(1, page_count):
         print('Парсинг %d%%' % (page / page_count * 100 ))
