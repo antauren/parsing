@@ -2,6 +2,7 @@
 
 import urllib.request
 from bs4 import BeautifulSoup
+import csv
 
 BASE_URL = 'https://www.weblancer.net/jobs/'
 
@@ -9,7 +10,6 @@ def get_page_count(html):
     soup = BeautifulSoup(html, "html.parser")
     pagination = soup.find('ul','pagination')
     last_page = str( pagination.find_all('li')[-1].a )[21:-15]
-
     return int(last_page)
 
 def get_html(url):
@@ -36,6 +36,15 @@ def parse(html):
         })
     return jobs
 
+def save(jobs, path):
+    with open(path, 'w') as csvfile:
+        writer = csv.writer(csvfile)
+        writer.writerow(('Вакансия', 'Категория', 'Цена', 'Заявки'))
+
+        for job in jobs:
+            writer.writerow(( job['title'], job['categories'], job['prices'], job['order'] ))
+
+
 def main():
     page_count = get_page_count(get_html(BASE_URL))
 
@@ -44,17 +53,19 @@ def main():
     jobs = []
 
     #page_count = 8 #если задать количество страниц вручную до 8 то ошибок нет
-    #Возможно они вкрутили защиту от Парсинга   Тогда можно добавить небольшую задержку между обращениями к сайту
-    
-    #заметил что на www.weblancer.net/jobs/ количество страниц уменьшилось на одну, и все заработало, возможно одна из них глюк давала
-    
+    # Возможно они вкрутили защиту от Парсинга   Тогда можно добавить небольшую задержку между обращениями к сайту
 
-    for page in range(1, page_count):
+    # заметил что на www.weblancer.net/jobs/ количество страниц уменьшилось на одну, и все заработало, возможно одна из них глюк давала
+
+    # на данный момент работает только с третьей страницы
+    for page in range(3, page_count):
         print('Парсинг %d%%' % (page / page_count * 100 ))
         jobs.extend(  parse( get_html(BASE_URL + '?page=%d' % page) )  )
 
     for job in jobs:
         print(job)
+
+    save(jobs, 'weblanser.net.csv')
 
     #print(get_page_count(get_html('https://www.weblancer.net/jobs/')))
     #print(parse(get_html('https://www.weblancer.net/jobs/')))
